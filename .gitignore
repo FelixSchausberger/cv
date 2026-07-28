@@ -1,0 +1,5 @@
+*.pdf
+/result
+.direnv/
+pii_en.typ
+pii_de.typ

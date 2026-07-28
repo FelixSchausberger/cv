@@ -1,0 +1,57 @@
+name: Deploy CV to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: typst-community/setup-typst@v3
+        with:
+          typst-version: latest
+
+      - name: Generate empty PII stubs (public version)
+        run: |
+          cat > pii_en.typ << 'PIEEOF'
+          #let pii-address = ""
+          #let pii-phone = ""
+          #let pii-email = ""
+          PIEEOF
+          cat > pii_de.typ << 'PIEEOF'
+          #let pii-address = ""
+          #let pii-phone = ""
+          #let pii-email = ""
+          PIEEOF
+
+      - name: Compile CVs
+        run: |
+          typst compile cv_en.typ cv_en.pdf
+          typst compile cv_de.typ cv_de.pdf
+
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p _site
+          cp cv_en.pdf cv_de.pdf _site/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
