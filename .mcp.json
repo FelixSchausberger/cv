@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "typst-lsp": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", ".", "--lsp", "tinymist"],
+      "type": "stdio"
+    }
+  }
+}

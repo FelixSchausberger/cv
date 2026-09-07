@@ -152,9 +152,11 @@
 
             nativeBuildInputs = with pkgs; [
               typst
+              typstyle
+              tinymist
+              just
               sops
               helix
-              just
             ];
           };
 

@@ -3,17 +3,21 @@
 #show heading: set text()
 #show link: underline
 #set page(
- margin: (x: 0.9cm, y: 1.3cm),
+  margin: (x: 0.9cm, y: 1.3cm),
 )
 #set par(justify: true)
 
-#let chiline() = {v(-3pt); line(length: 100%); v(-5pt)}
+#let chiline() = {
+  v(-3pt)
+  line(length: 100%)
+  v(-5pt)
+}
 
 #let icon(name, baseline: 1.5pt) = {
   box(
     baseline: baseline,
     height: 10pt,
-    image(name)
+    image(name),
   )
 }
 
@@ -30,11 +34,12 @@
   #if pii-email != "" [#icon("Icons/mail.svg") #pii-email | ]
   #contact-icon("Icons/phone.svg", pii-phone)
   #icon("Icons/github.svg") #link("https://github.com/FelixSchausberger")[GitHub] |
-  #icon("Icons/linkedin.svg") #link("https://www.linkedin.com/in/felix-schausberger-a04104249/")[LinkedIn]
+  #icon("Icons/linkedin.svg") #link(
+    "https://www.linkedin.com/in/felix-schausberger-a04104249/",
+  )[LinkedIn]
 
   #set align(right)
-  #h(1fr) #image("FelixSchausberger_500x500.jpg", width: 30%)]
-)
+  #h(1fr) #image("FelixSchausberger_500x500.jpg", width: 30%)])
 
 == Education
 #chiline()
