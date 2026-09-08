@@ -20,9 +20,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: typst-community/setup-typst@v3
+      - uses: typst-community/setup-typst@v5
         with:
           typst-version: latest
 
@@ -49,9 +49,9 @@ jobs:
           mkdir -p _site
           cp cv_en.pdf cv_de.pdf _site/
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
