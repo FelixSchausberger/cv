@@ -1,0 +1,68 @@
+name: CI / Auto Merge
+
+# Portable pipeline: build on PRs and main, squash-merge automatically when
+# the `auto-merge` label is present and the build passed. Works without
+# branch protection / GitHub Pro (unlike the native auto-merge pattern).
+# Note: merges via GITHUB_TOKEN do not emit push events, so on:push jobs of
+# the same commit are skipped — the PR run already built it.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build CV (de/en, public stubs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: typst-community/setup-typst@v3
+        with:
+          typst-version: latest
+
+      - name: Generate PII stubs (public build)
+        run: |
+          printf '#let pii-address = ""\n#let pii-phone = ""\n#let pii-email = ""\n' > pii_en.typ
+          cp pii_en.typ pii_de.typ
+
+      - name: Compile CVs
+        run: |
+          typst compile cv_en.typ cv_en.pdf
+          typst compile cv_de.typ cv_de.pdf
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cv
+          path: |
+            cv_en.pdf
+            cv_de.pdf
+
+  auto-merge:
+    name: Auto Merge (label-gated)
+    needs: build
+    if: >-
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'auto-merge')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Merge PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge --squash --delete-branch \
+            "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}"

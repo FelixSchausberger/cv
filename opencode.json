@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "typst-lsp": {
+      "type": "local",
+      "command": ["mcp-language-server", "--workspace", ".", "--lsp", "tinymist"],
+      "enabled": true,
+      "timeout": 15000
+    }
+  }
+}
